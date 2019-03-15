@@ -1,0 +1,128 @@
+=====petclincic ( java application setup)
+
+
+======= jenkins installation======
+
+1) take two servers and install one server as jenkins and one server as a tomcat
+
+ Create a instance  take rhel7.5     and login to instance
+
+2) install java by using below command
+
+	# yum install java-1.8.0-openjdk-devel
+	check the version by using   #java -version
+
+3) to enable the epel for jenkin for the following command
+
+#curl --silent --location http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo | sudo tee /etc/yum.repos.d/jenkins.repo
+
+check whether epel is enabled or not for the following  path
+    cd /etc/yum.repos.d/
+
+4)` install the jenkins  
+
+	# yum install jenkins --nogpgcheck -y  
+once jenkins is installed jenkins user is created in the path of /var/lib/jenkins
+
+5) start and enable the jenkins
+	#systemctl start jenkins
+	#systemctl enable jenkin
+
+
+6)cd /tmp/
+
+down laod the maven  wget http://mirrors.estointernet.in/apache/maven/maven-3/3.6.0/binaries/apache-maven-3.6.0-bin.zip
+
+unzip apache-maven-3.6.0-bin.zip
+
+mv apache-maven-3.6.0 /opt/maven
+
+curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+
+unzip awscli-bundle.zip
+
+sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+
+# echo $PATH | grep ~/bin     // See if $PATH contains ~/bin (output will be empty if it doesn't)
+# export PATH=~/bin:$PATH     // Add ~/bin to $PATH if necessaryqaaaaaaaaaaaaaaa
+
+
+
+=========TOMCAT INSTALLATION=====
+
+1)yum install wget unzip -y
+
+2) wget -c --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm
+
+3)rpm -ivh jdk-8u131-linux-x64.rpm
+
+4) wget http://mirrors.estointernet.in/apache/tomcat/tomcat-8/v8.5.37/bin/apache-tomcat-8.5.37-windows-x64.zip
+
+5)unzip apache-tomcat-8.5.37-windows-x64.zip
+
+6)mv apache-tomcat-8.5.37 /opt/tomcat
+
+7) chmod -R 755 /opt/tomcat/
+
+8)/opt/tomcat/bin/startup.sh
+
+9) do the passwordless 
+
+
+vi /etc/ssh/ssd-config        no to yes   restart the service
+
+from jenkins su - -s /bin/bash jenkins   generate the keys and copy to tomcat
+
+
+
+
+============petclinic setup====
+
+1) go to jenkins and select git hub project and give the https url 
+
+2) clone the code  and edit pom.xml   for 213 & 222 lines 
+
+
+Downloads/petclinic/src/main/resources/db/mysql
+
+Downloads/petclinic/src/main/resources/spring
+
+and push to github remote repo
+
+
+3) create the database for the name of petclinic 
+
+
+create a role and give the s3 acces and attach to instance
+
+
+3) /opt/maven/bin/mvn clean package
+
+sleep 5
+
+mv /var/lib/jenkins/workspace/petclinic/target/petclinic.war /var/lib/jenkins/workspace/petclinic/target/petclinic-dev-$BUILD_NUMBER.war
+
+/usr/local/bin/aws s3 cp /var/lib/jenkins/workspace/petclinic/target/petclinic-dev-$BUILD_NUMBER.war s3://petclinic-mumbai
+
+
+5) for deployment 
+
+/usr/local/bin/aws s3 cp s3://petclinic/petclinic-dev-14.war /var/lib/jenkins/war/petclinic.war
+
+scp /var/lib/jenkins/war/petclinic.war root@172.31.21.218:/opt/tomcat/webapps/
+
+
+open the browser   publicip:8080/petclinic
+
+
+
+
+databases======
+
+create database dbname;
+
+use dbname;
+
+show tables;
+
+select *from owners;
