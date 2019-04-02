@@ -10,11 +10,11 @@
 2) install java by using below command
 
 	# yum install java-1.8.0-openjdk-devel
-	check the version by using   #java -version
+	check the version by using   #  java -version
 
 3) to enable the epel for jenkin for the following command
 
-#curl --silent --location http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo | sudo tee /etc/yum.repos.d/jenkins.repo
+# curl --silent --location http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo | sudo tee /etc/yum.repos.d/jenkins.repo
 
 check whether epel is enabled or not for the following  path
     cd /etc/yum.repos.d/
@@ -25,8 +25,8 @@ check whether epel is enabled or not for the following  path
 once jenkins is installed jenkins user is created in the path of /var/lib/jenkins
 
 5) start and enable the jenkins
-	#systemctl start jenkins
-	#systemctl enable jenkin
+	#  systemctl start jenkins
+	#  systemctl enable jenkins
 
 
 6)cd /tmp/
@@ -44,8 +44,25 @@ unzip awscli-bundle.zip
 sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
 
 # echo $PATH | grep ~/bin     // See if $PATH contains ~/bin (output will be empty if it doesn't)
-# export PATH=~/bin:$PATH     // Add ~/bin to $PATH if necessaryqaaaaaaaaaaaaaaa
+# export PATH=~/bin:$PATH     // Add ~/bin to $PATH if necessary
 
+su - -s /bin/bash jenkins      check   aws is working or not 
+
+and generate the key by using ssh-keygen    and copy the public key into   github ssh and gpg key
+
+<ip>8080   and install the plugins and give the username and password
+
+and create a freestyle project   with the name of build and deploy
+
+
+
+==============create a rds====
+
+create a rds and give the name as petclinic and username and password
+
+=========create a  s3 bucket ======
+
+==== create a role for s3 and give to jenkins instance
 
 
 =========TOMCAT INSTALLATION=====
@@ -54,22 +71,32 @@ sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
 
 2) wget -c --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm
 
-3)rpm -ivh jdk-8u131-linux-x64.rpm
+3)  rpm -ivh jdk-8u131-linux-x64.rpm
 
-4) wget http://mirrors.estointernet.in/apache/tomcat/tomcat-8/v8.5.37/bin/apache-tomcat-8.5.37-windows-x64.zip
+4) wget http://mirrors.estointernet.in/apache/tomcat/tomcat-9/v9.0.17/bin/apache-tomcat-9.0.17.tar.gz
 
-5)unzip apache-tomcat-8.5.37-windows-x64.zip
+5) gunzip apache-tomcat-9.0.17.tar.gz
 
-6)mv apache-tomcat-8.5.37 /opt/tomcat
+tar -xvf apache-tomcat-9.0.17.tar
+
+6)  mv apache-tomcat-9.0.17 /opt/tomcat
+
 
 7) chmod -R 755 /opt/tomcat/
 
-8)/opt/tomcat/bin/startup.sh
+8) /opt/tomcat/bin/startup.sh
 
-9) do the passwordless 
+9) do the passwordless    this is in tomcat
 
 
 vi /etc/ssh/ssd-config        no to yes   restart the service
+
+visudo    root  ALL ALL=NOPASSED
+
+and give the password for root    passwd   -------
+
+
+goto jenkins and ssh-keygen     and do ssh-copyid root@privateip
 
 from jenkins su - -s /bin/bash jenkins   generate the keys and copy to tomcat
 
@@ -102,14 +129,14 @@ sleep 5
 
 mv /var/lib/jenkins/workspace/petclinic/target/petclinic.war /var/lib/jenkins/workspace/petclinic/target/petclinic-dev-$BUILD_NUMBER.war
 
-/usr/local/bin/aws s3 cp /var/lib/jenkins/workspace/petclinic/target/petclinic-dev-$BUILD_NUMBER.war s3://petclinic-mumbai
+/usr/local/bin/aws s3 cp /var/lib/jenkins/workspace/petclinic/target/petclinic-dev-$BUILD_NUMBER.war s3://petclinic-virginia
 
 
 5) for deployment 
 
-/usr/local/bin/aws s3 cp s3://petclinic/petclinic-dev-14.war /var/lib/jenkins/war/petclinic.war
+/usr/local/bin/aws s3 cp s3://petclinic/petclinic-dev-12.war /var/lib/jenkins/war/petclinic.war
 
-scp /var/lib/jenkins/war/petclinic.war root@172.31.21.218:/opt/tomcat/webapps/
+scp /var/lib/jenkins/war/petclinic.war root@172.31.17.92:/opt/tomcat/webapps/
 
 
 open the browser   publicip:8080/petclinic
